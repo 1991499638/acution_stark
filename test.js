@@ -1,6 +1,10 @@
-function genProof() {
-    var start = Date.now()
-    var proof = 3;
-    return [proof, Date.now() - start];
-}
-console.log(`${genProof()[1]}`)
+var {Web3} = require('web3');
+var url = 'http://loaclhost:8545'
+var web3 = new Web3(new Web3.providers.HttpProvider(url));
+web3.setProvider('ws://localhost:8546');
+const account = "0x2615b77264aCE0E06d7C3Cfb6671605E37250616";
+web3.eth.getBalance(account, (err, wei) => {
+        balance = web3.utils.fromWei(wei, 'ether')
+        console.log(`${balance}`)
+    })
+console.log(`${web3.version}`)

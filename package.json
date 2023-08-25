@@ -4,7 +4,8 @@
   "description": "a acution of the proof is created stark",
   "main": "index.js",
   "scripts": {
-    "test": "node ./index.js"
+    "start": "node ./index.js",
+    "test": "node ./test.js"
   },
   "keywords": [
     "acution",
@@ -22,6 +23,7 @@
     "@guildofweavers/air-script": "0.7.x",
     "@guildofweavers/galois": "0.4.x",
     "@guildofweavers/genstark": "^0.7.6",
-    "@guildofweavers/merkle": "0.3.x"
+    "@guildofweavers/merkle": "0.3.x",
+    "web3": "^4.1.1"
   }
 }
