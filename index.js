@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var genstark_1 = require("@guildofweavers/genstark");
-// var fs = require("fs");
+var fs = require("fs");
 const f = (2 ** 32) - (3 * (2 ** 25)) + 1;
 var max = [6, 7];  //the first is the last value of the bids field, the second is the max bid
 var bids = [1, 2, 3, 4, 5, 6]; 
@@ -66,13 +66,14 @@ function lastCheck() {
     }
 }
 //function to generated all proof
-var proofArray = [];
 function genProofAll() {
     fooStark = genFooStark(1);
     for (let i = 0; i < bids.length; i++) {
         var assertions = desAssertions(bids[i], max[1] - bids[i]);
         var proof = genProof(assertions, bids[i]);
-        proofArray[i] = proof[0];
+        // Serialize the proof and write into file
+        var buf = fooStark.serialize(proof[0]);
+        fs.writeFileSync(`proof/buf${i}.json`, buf);
     }
 }
 
@@ -81,7 +82,10 @@ function verAnyProof(i) {
     fooStark = genFooStark(1);
     var assertions = desAssertions(bids[i], max[1] - bids[i]);
     console.log(`开始验证`)
-    var result = verProof(assertions, proofArray[i]);
+    // Read proof from file and Deserialize the proof 
+    var fileBuf = fs.readFileSync(`proof/buf${i}.json`);
+    var parsedProof = fooStark.parse(fileBuf);
+    var result = verProof(assertions, parsedProof);
     console.log(`验证结果：${result[0]}\n总耗时：${result[1]}`)
 }
 
@@ -93,37 +97,25 @@ function test() {
     start = Date.now();
     genProofAll();
     console.log(`生成证明总耗时：${Date.now() - start}`);
-    console.log(`验证第3份证明`)
-    verAnyProof(3-1);
+    // console.log(`验证第3份证明`)
+    // verAnyProof(3-1);
 }
 test();
 console.log(`测试完毕\n`)
 
-// for (let i = 0; i < bids.length; i++) {
-//     var assertions = [
-//         { register: 0, step: 0, value: BigInt(bids[i]) },
-//         { register: 0, step: 1, value: BigInt(max[0] - bids[i]) }// value at last step is 127
-//     ];
-//     var start = Date.now()
-//     console.log(`第${i+1}位投标者\nbid:${bids[i]}\n开始生成第${i+1}份证明`)
-//     var proof = fooStark.prove(assertions, [[BigInt(bids[i])]]);
-//     console.log(`生成第${i+1}份证明耗时: ${Date.now() - start} ms\n\n`)
-//     proofArray[i] = proof;
-// }
-// console.log(`生成证明总耗时: ${Date.now() - startpa} ms\n\n`)
-// // console.log(`${proofArray.length}\n${typeof proofArray[0]}`)
-// // verify that if we start at 1 and run the computation for 64 steps, we get 127
-// console.log(`开始验证\n`)
-// var startva = Date.now()
-// for (let i = 0; i < bids.length; i++) {
-//     var assertions = [
-//         { register: 0, step: 0, value: BigInt(bids[i]) },
-//         { register: 0, step: 1, value: BigInt(max[0] - bids[i]) }// value at last step is 127
-//     ];
-//     var start = Date.now()
-//     console.log(`开始验证第${i+1}份证明`)
-//     var result = fooStark.verify(assertions, proofArray[i]);
-//     console.log(`验证第${i+1}份证明: ${result}\n耗时: ${Date.now() - start} ms\n\n`)
-// }
-// console.log(`验证证明总耗时: ${Date.now() - startva} ms`)
-// console.log(result); // true
+// Serialize the proof
+// console.log('序列化证明');
+// let start = Date.now();
+// const buf = fooStark.serialize(proof);
+// fs.writeFileSync('buf.json', buf);
+// const fileBuf = fs.readFileSync('buf.json');
+// assert(fileBuf.length === fooStark.sizeOf(proof));
+// console.log(`Proof serialized in ${Date.now() - start} ms; size: ${Math.round(fileBuf.byteLength / 1024 * 100) / 100} KB`);
+// console.log('-'.repeat(20));
+
+// // Deserialize the proof
+// console.log('反序列化证明');
+// start = Date.now();
+// const parsedProof = fooStark.parse(buf);
+// console.log(`Proof parsed in ${Date.now() - start} ms`);
+// console.log('-'.repeat(20));
