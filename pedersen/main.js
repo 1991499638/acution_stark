@@ -60,6 +60,7 @@ class Pedersen {
         return r.toString(16).padStart(40, '0')
     }
 
+    //C = G^x * H^r, H = g^secret mod p
     commit(message, secret, r = this.newOffset()) {
         r = bigInt(r, 16)
         const m = bigInt(message, 16)
