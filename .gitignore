@@ -60,3 +60,9 @@ Desktop.ini
 
 # Node.js runtime debug log files
 node-debug.log
+
+# chain 
+chain/geth/
+chain/keystore/
+chain/accounts.json
+chain/geth.log

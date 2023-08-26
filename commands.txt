@@ -1,0 +1,18 @@
+geth --datadir chain init genesis.json
+geth --datadir chain --networkid 300 --rpc --rpcaddr "127.0.0.1" --port "8545" --rpccorsdomain "*" --rpcapi "eth,net,web3,admin,personal" console
+
+personal.newAccount('123')
+
+personal.listAccounts
+
+another console
+geth attach
+
+repeat for all accounts
+miner.setEtherbase(eth.accounts[0])
+miner.start(4)
+zzz
+miner.stop()
+
+
+geth --allow-insecure-unlock --datadir .  --networkid 10 --http --http.addr "127.0.0.1" --port "8545" --http.corsdomain "*" --http.api "eth,net,web3,admin,personal" console 2>>geth.log --mine --miner.etherbase=0xC3F9A9b70aD46D4EAb5C39C976B6b1Efd065A6f8 --rpc.enabledeprecatedpersonal --rpc.txfeecap 0 --rpc.gascap 0

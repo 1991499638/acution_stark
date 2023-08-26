@@ -1,24 +1,82 @@
-var Pedersen = require("./pedersen/main")
-// p and q
-const pederson = new Pedersen(
-    '925f15d93a513b441a78826069b4580e3ee37fc5',
-    '959144013c88c9782d5edd2d12f54885aa4ba687'
-)
+const { Web3 } = require('web3');
+const fs = require('fs')
 
-// const secret = pederson.newSecret()
-// if (secret.length !== 40) {
-//     throw 'generated invalid key'
-// } else {
-//     console.log(secret)
+// Connect to the Ethereum network using the HTTP provider
+const ganacheUrl = 'http://127.0.0.1:8545';
+const httpProvider = new Web3.providers.HttpProvider(ganacheUrl);
+const web3 = new Web3(httpProvider);
+async function main() {
+    try {
+        // Get the current block number from the network
+        const currentBlockNumber = await web3.eth.getBlockNumber();
+        console.log('Current block number:', currentBlockNumber);
+
+        // Get the list of accounts in the connected node (e.g., Ganache)
+        const accounts = (await web3.eth.personal.getAccounts());
+        await web3.eth.personal.unlockAccount(accounts[0], "666666", 600).then(console.log('Account unlocked!'))
+        await web3.eth.personal.unlockAccount(accounts[1], "666666", 600).then(console.log('Account unlocked!'))
+        var bin = fs.readFileSync("./contract/BinTest.txt", "utf8")
+        var abi = JSON.parse(fs.readFileSync("./contract/ABITest.txt", "utf8"))
+        // console.dir(abi)
+        // console.log(bin)
+        const parameter = [1];
+        const MyContract = new web3.eth.Contract(abi);
+        const myContract = MyContract.deploy({
+            data: `0x${bin}`,
+            arguments: parameter,
+        });
+        const gas = await myContract.estimateGas({
+            from: accounts[0],
+        });
+        console.log('estimated gas:', gas);
+
+        console.log(`${typeof bin}\n${typeof abi}`)
+        // await web3.eth.sendTransaction({
+        //     from: accounts[0],
+        //     gasPrice: "20000000000",
+        //     gas: "21000",
+        //     to: accounts[1],
+        //     value: "1000000000000000000",
+        //     data: ""
+        // }, '666666').then(console.log);
+    } catch (error) {
+        console.error('An error occurred:', error);
+    }
+}
+
+main();
+
+// async function deploy() {
+//     const providersAccounts = await web3.eth.getAccounts();
+//     const defaultAccount = providersAccounts[0];
+//     console.log('deployer account:', defaultAccount);
+
+//     const myContract = MyContract.deploy({
+//         data: '0x' + bytecode,
+//         arguments: [1],
+//     });
+
+//     // optionally, estimate the gas that will be used for development and log it
+//     const gas = await myContract.estimateGas({
+//         from: defaultAccount,
+//     });
+//     console.log('estimated gas:', gas);
+
+//     try {
+//         // Deploy the contract to the Ganache network
+//         const tx = await myContract.send({
+//             from: defaultAccount,
+//             gas,
+//             gasPrice: 10000000000,
+//         });
+//         console.log('Contract deployed at address: ' + tx.options.address);
+
+//         // Write the Contract address to a new file
+//         const deployedAddressPath = path.join(__dirname, 'MyContractAddress.bin');
+//         fs.writeFileSync(deployedAddressPath, tx.options.address);
+//     } catch (error) {
+//         console.error(error);
+//     }
 // }
-var secret = '1377d1a4a09c2b36b30f3a68dc949ea0bda92fd7'
-var massage = '7650'
-var testA = pederson.commit(massage, secret, 'e93c58e6f7f3f4b6f6f0e55f3a4191b87d58b7b1')
-console.dir(testA)
-console.log(`${typeof testA}`)
-// const assertionA = [ '4b7680d6262cea707175d55e862a09ba71b55655', 'e93c58e6f7f3f4b6f6f0e55f3a4191b87d58b7b1' ]
-// if (testA.toString() !== assertionA.toString()) {
-//     throw 'arbitrary signature test 1 failed'
-// }
-var result = pederson.verify(massage, [testA], secret);
-console.log(`${result}`)
+
+// deploy();
