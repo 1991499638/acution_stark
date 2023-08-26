@@ -24,6 +24,8 @@
     "@guildofweavers/galois": "0.4.x",
     "@guildofweavers/genstark": "^0.7.6",
     "@guildofweavers/merkle": "0.3.x",
+    "big-integer": "^1.6.51",
+    "crypto": "^1.0.1",
     "web3": "^4.1.1"
   }
 }
