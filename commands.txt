@@ -15,4 +15,4 @@ zzz
 miner.stop()
 
 
-geth --allow-insecure-unlock --datadir .  --networkid 10 --http --http.addr "127.0.0.1" --port "8545" --http.corsdomain "*" --http.api "eth,net,web3,admin,personal" console 2>>geth.log --mine --miner.etherbase=0xC3F9A9b70aD46D4EAb5C39C976B6b1Efd065A6f8 --rpc.enabledeprecatedpersonal --rpc.txfeecap 0 --rpc.gascap 0
+geth --allow-insecure-unlock --datadir .  --networkid 10 --http --http.addr "127.0.0.1" --port "8545" --http.corsdomain "*" --http.api "eth,net,web3,admin,personal" console 2>>geth.log --mine --miner.etherbase=0x8cDB3CE19f7D329113E42ED79b1DE923782aD4D9 --rpc.enabledeprecatedpersonal --rpc.txfeecap 0 --rpc.gascap 0
