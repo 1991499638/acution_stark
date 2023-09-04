@@ -1,7 +1,8 @@
 geth --datadir chain init genesis.json
 geth --datadir chain --networkid 300 --rpc --rpcaddr "127.0.0.1" --port "8545" --rpccorsdomain "*" --rpcapi "eth,net,web3,admin,personal" console
 
-personal.newAccount('123')
+personal.newAccount('666666')
+geth account new --datadir .
 
 personal.listAccounts
 

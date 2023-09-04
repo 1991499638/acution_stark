@@ -1,6 +1,8 @@
 var Pedersen = require("./pedersen/main")
 var fs = require("fs")
+var crypto = require('crypto');
 // p and q, the p is a large prime number, the q is a generator
+// 20 bytes
 const pederson = new Pedersen(
     '925f15d93a513b441a78826069b4580e3ee37fc5',
     '959144013c88c9782d5edd2d12f54885aa4ba687'
@@ -13,31 +15,30 @@ const pederson = new Pedersen(
 //     console.log(secret)
 // }
 var secret = '763cff582aab107fa0c48ecdd17bedc74e771c22'
-var massage = ['7650','760','750','765','650',]
-var r = [
-    'e93c58e6f7f3f4b6f6f0e55f3a4191b87d58b7b1',
-    'e93c58e6f7f3f4b6f6f0e55f3a4191b87d58b7b1',
-    'e93c58e6f7f3f4b6f6f0e55f3a4191b87d58b7b1',
-    'e93c58e6f7f3f4b6f6f0e55f3a4191b87d58b7b1',
-    'e93c58e6f7f3f4b6f6f0e55f3a4191b87d58b7b1'
-]
+var message = ['7650','760','750','765','650',]
+
 //generate all commit
-function genCommit(massage, r) {
-    for (let i = 0; i < massage.length; i++) {
-        var commit = pederson.commit(massage[i], secret, r[i]);
-        fs.writeFileSync(`./commit/commit${i}.json`, JSON.stringify(commit, null, 2))
+function genCommit(message) {
+    var ciphers = [];
+    for (let i = 0; i < message.length; i++) {
+        var r = crypto.randomBytes(20).toString('hex');
+        var commit = pederson.commit(message[i], secret, r);
+        var cipher = `${commit[0]}*${commit[1]}*${message[i]}`
+        ciphers.push(cipher);
     }
+    fs.writeFileSync(`./commit/commit.json`, JSON.stringify(ciphers, null, 2))
     console.log(`全部承诺生成完毕`)
 }
-// genCommit(massage, r)
-function verCommit(massage, i) {
-    var commit = JSON.parse(fs.readFileSync(`./commit/commit${i}.json`)) 
-    console.log(`${typeof commit[0]}`)
-    console.dir(commit)
-    var result = pederson.verify(massage[i], [commit], secret);
-    console.log(`${result}`)
+// genCommit(message)
+function verCommit( i, other) {
+    var ciphers = JSON.parse(fs.readFileSync(`./commit/commit.json`));
+    var cipher = ciphers[i];
+    var parts = cipher.split('*'); // 假设数据格式是 "commit*commit*message"
+    var commit = [parts[0], parts[1]];
+    var message = typeof other !== 'undefined' ? other :parts[2];
+    var result = pederson.verify(message, [commit], secret);
+    // console.log(`${result}`)
+    return result;
 }
-verCommit(massage, 0)
-// var testA = pederson.commit(massage, secret, r)
-// console.dir(testA)
-// console.log(`${typeof testA}`)
+
+module.exports = {genCommit, verCommit}

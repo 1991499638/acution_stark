@@ -40,7 +40,7 @@ contract Auction{
 // variables needed during the live action process
 
     struct bids{
-        bytes cipher; //bid + r + commit
+        string cipher; //bid + r + commit
         bool existing;
         bool qualified;
         bool paidBack;
@@ -57,7 +57,7 @@ contract Auction{
 
 // bidFees = 1;  0x5a64c5a9743a4d7b346c55d4250716bba6c27a19d3785e5f7641b9c1d7b4d7f7
     constructor (bytes32 _product_description, bytes32 _technical_specification, uint _maxBiddersCount, uint _fairnessFees, bool _testing) public payable {
-        require(msg.value >= _fairnessFees || testing, "账户余额不足");
+        // require(msg.value >= _fairnessFees || testing, "账户余额不足");
         auctioneer = msg.sender;
         //不同阶段的区块时间
         product_description = _product_description;
@@ -72,7 +72,7 @@ contract Auction{
 
 // 密文需要后端使用RSA加密;0xfffe0102030405060708fffe0102030405060708fffe
 // 返回值即为bidder编号
-    function Bid(bytes cipher, bool pVerify) public payable returns (uint){
+    function Bid(string cipher, bool pVerify) public payable returns (uint){
         require(indexs.length < maxBiddersCount, "投标成员人数已满"); //available slot    
         require(msg.value >= fairnessFees, "账户余额不足以支付押金");  //paying fees
         require(msg.sender != auctioneer, "auctioneer不得进行投标");

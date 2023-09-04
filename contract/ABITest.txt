@@ -11,7 +11,7 @@
 		"outputs": [
 			{
 				"name": "cipher",
-				"type": "bytes"
+				"type": "string"
 			},
 			{
 				"name": "existing",
@@ -107,29 +107,6 @@
 	},
 	{
 		"constant": false,
-		"inputs": [
-			{
-				"name": "cipher",
-				"type": "bytes"
-			},
-			{
-				"name": "pVerify",
-				"type": "bool"
-			}
-		],
-		"name": "Bid",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": true,
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"constant": false,
 		"inputs": [],
 		"name": "Withdraw",
 		"outputs": [],
@@ -191,6 +168,29 @@
 		],
 		"payable": false,
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "cipher",
+				"type": "string"
+			},
+			{
+				"name": "pVerify",
+				"type": "bool"
+			}
+		],
+		"name": "Bid",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": true,
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
