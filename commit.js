@@ -30,9 +30,9 @@ function genCommit(message) {
     console.log(`全部承诺生成完毕`)
 }
 // genCommit(message)
-function verCommit( i, other) {
+function verCommit( i, newCipher, other = undefined) {
     var ciphers = JSON.parse(fs.readFileSync(`./commit/commit.json`));
-    var cipher = ciphers[i];
+    var cipher = typeof newCipher !== 'undefined' ? newCipher : ciphers[i];
     var parts = cipher.split('*'); // 假设数据格式是 "commit*commit*message"
     var commit = [parts[0], parts[1]];
     var message = typeof other !== 'undefined' ? other :parts[2];
@@ -40,5 +40,5 @@ function verCommit( i, other) {
     // console.log(`${result}`)
     return result;
 }
-
+// console.log(verCommit(0,"efb034e9e8fe7a36096c82c66e93284e607427fb*c012eef9eb407fc0c4cd4440cfa7d34a60ba2cef*21"))
 module.exports = {genCommit, verCommit}

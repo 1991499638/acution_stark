@@ -43,7 +43,7 @@ async function main() {
     }
     
     
-    await Deploy();
+    // await Deploy();
     await interact();
 }
 
@@ -96,7 +96,7 @@ async function interact() {
                     from: Accounts[i],
                     gas: 1000000,
                     gasPrice: 10000000000,
-                    value: web3.utils.toWei(fairnessFees, 'ether'),
+                    value: web3.utils.toWei(fairnessFees, 'finney'),
                 });
                 console.log(`Account[${i}]投标成功，消耗gas：${receipt.gasUsed}`)
             }
@@ -106,12 +106,42 @@ async function interact() {
         }
     }
 
-    // async function ClaimWinner() {
-        
-    // }
+    // 生成证明
 
-    startBid();
-    // ClaimWinner();
+    // 决出获胜者
+    async function ClaimWinner() {
+        var bids = [];
+        var max_bid;
+        var index;
+
+        try {
+            for (let i = 1; i < Accounts.length; i++) {
+                const cipher = await MyContract.methods.getBid().call({from: Accounts[i]});
+                var parts = cipher.split('*');
+                bids[i - 1] = parseInt(parts[2]);
+                // console.log(`${parts[2]}`)
+            }
+            max_bid = bids[0];
+            index = 1;
+            for (let i = 1; i < bids.length; i++) {
+                if (max_bid < bids[i]){
+                    max_bid = bids[i];
+                    index = i;
+                }
+            }
+            console.log(`index: ${index}  max_bid: ${max_bid}`)
+            const cipher = await MyContract.methods.getBid().call({from: Accounts[index]});
+            await MyContract.methods.ClaimWinner(Accounts[index + 1], max_bid, commit.verCommit(index, cipher)).call({from: defaultAccount})
+            console.log(`获胜者已决出`)
+        } catch (error) {
+            console.error(`决出获胜者失败\n${error}`)
+        }
+        
+    }
+
+    // startBid();
+    
+    ClaimWinner();
     // try {
     //     // 获取来自合约的常量信息
     //     const total_bidders = await MyContract.methods.total_bidders().call();
