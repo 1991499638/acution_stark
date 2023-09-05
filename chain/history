@@ -1,1 +1,11 @@
 eth
+miner。start(4)
+miner.start(4)
+eth.getBalance(eth.accounts[1])
+eth.getBalance(eth.accounts[2])
+eth.getBalance(eth.accounts[3])
+eth.getBalance(eth.accounts[4])
+eth.getBalance(eth.accounts[5])
+eth.getBalance(eth.accounts[6])
+miner.setEtherbase(eth.accounts[1])
+miner.start(4)

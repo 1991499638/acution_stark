@@ -1,9 +1,9 @@
 const { Web3 } = require('web3');
 const fs = require('fs')
 const commit = require('./commit')
-
+const proof = require('./proof')
 // Connect to the Ethereum network using the HTTP provider
-const ganacheUrl = 'http://127.0.0.1:8545';
+const ganacheUrl = 'http://127.0.0.1:7545';
 const httpProvider = new Web3.providers.HttpProvider(ganacheUrl);
 const web3 = new Web3(httpProvider);
 web3.eth.Contract.handleRevert = true;
@@ -38,12 +38,13 @@ async function main() {
     Accounts = await web3.eth.getAccounts();
     defaultAccount = Accounts[0];
     // 解锁所有账户，为了方便实验中所有账户的密码均设为666666
-    for (let i = 0; i < Accounts.length; i++) {
-        await web3.eth.personal.unlockAccount(Accounts[i], "666666", 600).then(console.log(`Account${i} unlocked!`))
-    }
+    // for (let i = 0; i < Accounts.length; i++) {
+    //     await web3.eth.personal.unlockAccount(Accounts[i], "666666", 600).then(console.log(`Account${i} unlocked!`))
+    //     // camera range budget urban web virtual stomach second boat permit position axis
+    // }
     
     
-    // await Deploy();
+    await Deploy();
     await interact();
 }
 
@@ -67,7 +68,7 @@ async function Deploy() {
                 gas,
                 gasPrice: 10000000000,
             });
-            console.log('合约部署地址: ' + tx.options.address);
+            console.log(`合约部署成功，地址: ${tx.options.address}\n`);
             // Write the Contract address to a new file
             fs.writeFileSync('MyContractAddress.bin', tx.options.address);
         } catch (error) {
@@ -85,6 +86,7 @@ async function interact() {
     const MyContract = new web3.eth.Contract(abi, deployedAddress);
 
     // 开始投标
+    console.log(`开始投标`)
     async function startBid() {
         try {
             console.log(`总共${Accounts.length}个账户`)
@@ -106,14 +108,14 @@ async function interact() {
         }
     }
 
-    // 生成证明
 
     // 决出获胜者
+    var bids = [];
+    var max_bid;
+    var index;
     async function ClaimWinner() {
-        var bids = [];
-        var max_bid;
-        var index;
 
+        console.log(`开始决出胜者`)
         try {
             for (let i = 1; i < Accounts.length; i++) {
                 const cipher = await MyContract.methods.getBid().call({from: Accounts[i]});
@@ -129,19 +131,31 @@ async function interact() {
                     index = i;
                 }
             }
-            console.log(`index: ${index}  max_bid: ${max_bid}`)
+            console.log(`胜者：index: ${index}  max_bid: ${max_bid}`)
             const cipher = await MyContract.methods.getBid().call({from: Accounts[index]});
             await MyContract.methods.ClaimWinner(Accounts[index + 1], max_bid, commit.verCommit(index, cipher)).call({from: defaultAccount})
-            console.log(`获胜者已决出`)
+            console.log(`获胜者已决出\n`)
         } catch (error) {
             console.error(`决出获胜者失败\n${error}`)
+        }
+    }
+
+    // 生成证明
+    async function genProofs() {
+        console.log(`开始生成证明`)
+        try {
+            proof.genProofAll(max_bid, bids)
+            console.log(`证明生成完毕`)
+            
+        } catch (error) {
+            console.error(`证明生成失败\n${error}`)
         }
         
     }
 
-    // startBid();
-    
-    ClaimWinner();
+    await startBid();
+    await ClaimWinner();
+    await genProofs();
     // try {
     //     // 获取来自合约的常量信息
     //     const total_bidders = await MyContract.methods.total_bidders().call();

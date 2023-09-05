@@ -3,11 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var genstark_1 = require("@guildofweavers/genstark");
 var fs = require("fs");
 const f = (2 ** 32) - (3 * (2 ** 25)) + 1;
-var max = [6, 7];  //the first is the last value of the bids field, the second is the max bid
-var bids = [1, 2, 3, 4, 5, 6]; 
+// var max = [6, 7];  //the first is the last value of the bids field, the second is the max bid
+// var bids = [1, 2, 3, 4, 5, 6]; 
 
 // define a STARK for this computation
-function genFooStark(i) {
+function genFooStark(max) {
     var fooStark = (0, genstark_1.instantiateScript)(Buffer.from(`
     define Foo over prime field (${f.toString()}) {
 
@@ -17,7 +17,7 @@ function genFooStark(i) {
     transition 1 register {
         for each (startValue) {
             init { yield startValue; }
-            for steps [1..127] { yield ${max[i]} - $r0 ; }
+            for steps [1..127] { yield ${max} - $r0 ; }
         }
     }
 
@@ -56,20 +56,20 @@ function verProof(assertions, proof) {
 }
 
 //function to check any bid <= bid.last
-function lastCheck() {
-    fooStark = genFooStark(0);
+function lastCheck(max, bids) {
+    fooStark = genFooStark(max);
     for (let i = 0; i < bids.length; i++) {
-        var assertions = desAssertions(bids[i], max[0] - bids[i]);
+        var assertions = desAssertions(bids[i], max - bids[i]);
         var proof = genProof(assertions, bids[i]);
         var result = verProof(assertions, proof[0]);
         console.log(`验证第${i+1}份证明: ${result[0]}`)
     }
 }
 //function to generated all proof
-function genProofAll() {
-    fooStark = genFooStark(1);
+function genProofAll(max, bids) {
+    fooStark = genFooStark(max);
     for (let i = 0; i < bids.length; i++) {
-        var assertions = desAssertions(bids[i], max[1] - bids[i]);
+        var assertions = desAssertions(bids[i], max - bids[i]);
         var proof = genProof(assertions, bids[i]);
         // Serialize the proof and write into file
         var buf = fooStark.serialize(proof[0]);
@@ -100,9 +100,9 @@ function test() {
     // console.log(`验证第3份证明`)
     // verAnyProof(3-1);
 }
-test();
-console.log(`测试完毕\n`)
-
+// test();
+// console.log(`测试完毕\n`)
+module.exports = {genProofAll}
 // Serialize the proof
 // console.log('序列化证明');
 // let start = Date.now();

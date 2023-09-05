@@ -87,32 +87,32 @@ contract Auction{
 
 //************* the partie default passes all ************************************
 // seller participation stage: sellers participate in the evaluation stage
-    // function bidder_participation (bytes32 _RFI_form,bytes32 _RFP_form, bytes32 _RFQ_form) public{
-     
-    //  require (auctioneer_specification);
-    //  require(Bids[msg.sender].existing == true, "the bidder must existing! ");
-     
-    //  bidder_details[msg.sender].RFI_form = _RFI_form;
-    //  bidder_details[msg.sender].RFP_form = _RFP_form;
-    //  bidder_details[msg.sender].RFQ_form = _RFQ_form;
+    function bidder_participation (bytes32 _RFI_form,bytes32 _RFP_form, bytes32 _RFQ_form) public{
+    
+        require (auctioneer_specification);
+        require(Bids[msg.sender].existing == true, "the bidder must existing! ");
+        
+        bidder_details[msg.sender].RFI_form = _RFI_form;
+        bidder_details[msg.sender].RFP_form = _RFP_form;
+        bidder_details[msg.sender].RFQ_form = _RFQ_form;
 
-    //  bidder_participate = true; 
-    // }
+        bidder_participate = true; 
+    }
 
 // auctioneer check bidder_details of every bidder and select qualified bidders
-    // function getBidder_details(address _address) external view onlyauctioneer returns (bytes32, bytes32, bytes32) {
-    //     bidder_evaluation storage evaluation = bidder_details[_address];
-    //     return (evaluation.RFI_form, evaluation.RFP_form, evaluation.RFQ_form);
-    // }
+    function getBidder_details(address _address) external view onlyauctioneer returns (bytes32, bytes32, bytes32) {
+        bidder_evaluation storage evaluation = bidder_details[_address];
+        return (evaluation.RFI_form, evaluation.RFP_form, evaluation.RFQ_form);
+    }
 
-    // function select_bidders(address _address) external onlyauctioneer {
+    function select_bidders(address _address) external onlyauctioneer {
 
-    //     require(bidder_participate);
-    //     bidder_qualified = true;
-    //     require(Bids[msg.sender].existing == true, "the bidder must existing! ");
-    //     Bids[_address].qualified = true;
-    //     total_qualified_bidders++;
-    // }
+        require(bidder_participate);
+        bidder_qualified = true;
+        require(Bids[msg.sender].existing == true, "the bidder must existing! ");
+        Bids[_address].qualified = true;
+        total_qualified_bidders++;
+    }
 //************* the partie default passes all ************************************
 
     function ClaimWinner(address _winner, uint _bid, bool pVerify) public onlyauctioneer {
