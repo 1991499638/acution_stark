@@ -106,7 +106,7 @@ async function interact() {
                     value: web3.utils.toWei(fairnessFees, 'finney'),
                 });
                 gasTotal = gasTotal + receipt.gasUsed;
-                console.log(`Account[${i}]投标成功    消耗gas：${receipt.gasUsed}    耗时：${Date.now() - start} ms`);// 177336
+                console.log(`  Account[${i}]投标成功    消耗gas：${receipt.gasUsed}    耗时：${Date.now() - start} ms`);// 177336
             }
             var b;
             console.log(`投标结束    当前合约余额：${web3.utils.fromWei(await web3.eth.getBalance(deployedAddress), 'finney')} finney    总共消耗gas：${gasTotal}`)
@@ -185,7 +185,7 @@ async function interact() {
                     var start = Date.now();
                     var receipt = await MyContract.methods.Withdraw().send({from: Accounts[i]});
                     gasTotal = gasTotal + receipt.gasUsed;
-                    console.log(`账户${i}已取回押金    gas: ${receipt.gasUsed}    耗时：${Date.now() - start} ms`)
+                    console.log(`  账户${i}已取回押金    gas: ${receipt.gasUsed}    耗时：${Date.now() - start} ms`)
                 }
             }
             console.log(`全部押金取回成功    当前合约余额：${web3.utils.fromWei(await web3.eth.getBalance(deployedAddress), 'finney')} finney    总共消耗gas: ${gasTotal}`)
@@ -197,17 +197,31 @@ async function interact() {
     // 胜利者支付bid
     async function WinnerPay() {
         console.log(`胜利者开始支付投标`)
-        var receipt = await MyContract.methods.WinnerPay().send({
-            from: Accounts[index + 1],                     
-            gas: 1000000,
-            gasPrice: 10000000000,
-            value: web3.utils.toWei(max_bid - fairnessFees, 'finney'), });
-        console.log(`当前合约余额：${web3.utils.fromWei(await web3.eth.getBalance(deployedAddress), 'finney')} finney    消耗gas: ${receipt.gasUsed}`)
+        try {
+            var receipt = await MyContract.methods.WinnerPay().send({
+                from: Accounts[index + 1],                     
+                gas: 1000000,
+                gasPrice: 10000000000,
+                value: web3.utils.toWei(max_bid - fairnessFees, 'finney'), });
+            console.log(`当前合约余额：${web3.utils.fromWei(await web3.eth.getBalance(deployedAddress), 'finney')} finney    消耗gas: ${receipt.gasUsed}`)
+        } catch (error) {
+            console.error(`胜利者支付投标失败${error}`)
+        }
+    }
+
+    // 销毁合约
+    async function Destroy() {
+        console.log(`开始摧毁合约`)
+        try {
+            console.log(`当前合约余额：${web3.utils.fromWei(await web3.eth.getBalance(deployedAddress), 'finney')} finney\n当前拍卖商余额：${web3.utils.fromWei(await web3.eth.getBalance(defaultAccount), 'finney')} finney`)
+            var receipt = await MyContract.methods.Destroy().send({from: defaultAccount});
+            console.log(`摧毁合约成功\n  当前拍卖商余额：${web3.utils.fromWei(await web3.eth.getBalance(defaultAccount), 'finney')} finney    消耗gas: ${receipt.gasUsed}`)
+        } catch (error) {
+            console.error(`摧毁合约失败:${error}`)
+        }
     }
 
     var start = Date.now();
-    // var balance = getBalance();
-    // console.log(`合约余额：${balance}`)
     await startBid();
     console.log(`投标耗时：${Date.now() - start} ms\n`);
     start = Date.now();
@@ -222,6 +236,9 @@ async function interact() {
     start = Date.now();
     await WinnerPay();
     console.log(`胜利者支付投标耗时：${Date.now() - start} ms\n`);
+    start = Date.now();
+    await Destroy();
+    console.log(`摧毁合约耗时：${Date.now() - start} ms\n`);
     // try {
     //     // 获取来自合约的常量信息
     //     const total_bidders = await MyContract.methods.total_bidders().call();

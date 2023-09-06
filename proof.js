@@ -86,7 +86,7 @@ function verAnyProof(i, max, bids) {
     var fileBuf = fs.readFileSync(`proof/buf${i}.json`);
     var parsedProof = fooStark.parse(fileBuf);
     var result = verProof(assertions, parsedProof);
-    console.log(`账户${i}验证结果：${result[0]}   耗时：${result[1]} ms`)
+    console.log(`  账户${i}验证结果：${result[0]}   耗时：${result[1]} ms`)
 }
 
 function test() {
