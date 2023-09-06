@@ -78,15 +78,15 @@ function genProofAll(max, bids) {
 }
 
 //function to verify proof
-function verAnyProof(i) {
-    fooStark = genFooStark(1);
-    var assertions = desAssertions(bids[i], max[1] - bids[i]);
-    console.log(`开始验证`)
+function verAnyProof(i, max, bids) {
+    fooStark = genFooStark(max);
+    var assertions = desAssertions(bids, max - bids);
+    // console.log(`开始验证`)
     // Read proof from file and Deserialize the proof 
     var fileBuf = fs.readFileSync(`proof/buf${i}.json`);
     var parsedProof = fooStark.parse(fileBuf);
     var result = verProof(assertions, parsedProof);
-    console.log(`验证结果：${result[0]}\n总耗时：${result[1]} ms`)
+    console.log(`账户${i}验证结果：${result[0]}   耗时：${result[1]} ms`)
 }
 
 function test() {
@@ -102,7 +102,8 @@ function test() {
 }
 // test();
 // console.log(`测试完毕\n`)
-module.exports = {genProofAll}
+// console.log(`${verAnyProof(0, 99, 62)}`);
+module.exports = {genProofAll, verAnyProof}
 // Serialize the proof
 // console.log('序列化证明');
 // let start = Date.now();

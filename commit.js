@@ -15,7 +15,7 @@ const pederson = new Pedersen(
 //     console.log(secret)
 // }
 var secret = '763cff582aab107fa0c48ecdd17bedc74e771c22'
-var message = ['7650','760','750','765','650',]
+// var message = ['7650','760','750','765','650',]
 
 //generate all commit
 function genCommit(message) {
