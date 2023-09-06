@@ -67,3 +67,9 @@ chain/keystore/
 chain/accounts.json
 chain/geth.log
 chain/history
+
+#commitment
+commit/
+
+#proof
+proof/
