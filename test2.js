@@ -1,5 +1,6 @@
-// For simplicity we use `web3` package here. However, if you are concerned with the size,
-//  you may import individual packages like 'web3-eth', 'web3-eth-contract' and 'web3-providers-http'.
+// 本脚本仅用于测试部分功能
+
+
 const { Web3 } = require('web3'); //  web3.js has native ESM builds and (`import Web3 from 'web3'`)
 const fs = require('fs');
 

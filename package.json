@@ -1,14 +1,13 @@
 {
   "name": "auction_stark",
   "version": "1.0.0",
-  "description": "a acution of the proof is created stark",
+  "description": "a auction of the proof is created stark",
   "main": "index.js",
   "scripts": {
-    "start": "node ./index.js",
     "test": "node ./test.js"
   },
   "keywords": [
-    "acution",
+    "auction",
     "stark"
   ],
   "author": "live",
