@@ -8,10 +8,15 @@ const httpProvider = new Web3.providers.HttpProvider(ganacheUrl);
 const web3 = new Web3(httpProvider);
 web3.eth.Contract.handleRevert = true;
 
-var bin = fs.readFileSync("./contract/BinTest.txt", "utf8")
-var abi = JSON.parse(fs.readFileSync("./contract/ABITest.txt", "utf8"))
+var bin = fs.readFileSync("./contract/BinNew.txt", "utf8")
+var abi = JSON.parse(fs.readFileSync("./contract/ABINew.txt", "utf8"))
 
 //合约的一些参数
+var init = 10;
+var submit = 100;
+var verify = 10;
+var winner_pay = 10;
+var destroy = 10;
 var product_description = "0x5a64c5a9743a4d7b346c55d4250716bba6c27a19d3785e5f7641b9c1d7b4d7f7"; 
 var technical_specification = "0x5a64c5a9743a4d7b346c55d4250716bba6c27a19d3785e5f7641b9c1d7b4d7f7";              
 var maxBiddersCount = 100;
@@ -44,15 +49,15 @@ async function main() {
     // }
     
     var start = Date.now();
-    await Deploy();
-    console.log(`部署合约耗时：${Date.now() - start} ms\n`)
+    // await Deploy();
+    // console.log(`部署合约耗时：${Date.now() - start} ms\n`)
     await interact();
     console.log(`拍卖总耗时：${Date.now() - start} ms`)
 }
 
 async function Deploy() {
     try {
-        const parameter = [product_description, technical_specification, maxBiddersCount, fairnessFees, testing];
+        const parameter = [init, submit, verify, winner_pay, destroy, product_description, technical_specification, maxBiddersCount, fairnessFees, testing];
         const MyContract = new web3.eth.Contract(abi);
         // console.dir(MyContract)
         const myContract = MyContract.deploy({
@@ -86,10 +91,62 @@ async function interact() {
 
     const deployedAddress = fs.readFileSync('MyContractAddress.bin', 'utf8');
     const MyContract = new web3.eth.Contract(abi, deployedAddress);
+
+    async function test() {
+        // 开始投标
+        var BlockNumber = [];
+        var i=0;
+        // BlockNumber[i++] = await web3.eth.getBlockNumber();
+        // var start = Date.now();
+        // await startBid();
+        // console.log(`投标耗时：${Date.now() - start} ms\n`);
+
+        // 决出获胜者
+        BlockNumber[i++] = await web3.eth.getBlockNumber();
+        start = Date.now();
+        await ClaimWinner();
+        console.log(`决出获胜者耗时：${Date.now() - start} ms\n`);
+
+        // // 生成证明
+        // BlockNumber[i++] = await web3.eth.getBlockNumber();
+        // start = Date.now();
+        // await genProofs();
+        // console.log(`生成证明耗时：${Date.now() - start} ms\n`);
+
+        // // 退还押金
+        // BlockNumber[i++] = await web3.eth.getBlockNumber();
+        // start = Date.now();
+        // await withdraw();
+        // console.log(`取回押金耗时：${Date.now() - start} ms\n`);
+
+        // // 胜者支付出价
+        // BlockNumber[i++] = await web3.eth.getBlockNumber();
+        // start = Date.now();
+        // await WinnerPay();
+        // console.log(`胜利者支付投标耗时：${Date.now() - start} ms\n`);
+
+        // // 摧毁合约
+        // BlockNumber[i++] = await web3.eth.getBlockNumber();
+        // start = Date.now();
+        // await Destroy();
+        // console.log(`摧毁合约耗时：${Date.now() - start} ms\n`);
+        // BlockNumber[i++] = await web3.eth.getBlockNumber();
+
+        // i=0;
+        // console.log(`
+        // beforeBid: ${BlockNumber[i++]}
+        // beforeClaimWinner: ${BlockNumber[i++]}
+        // beforeGenProofs: ${BlockNumber[i++]}
+        // beforeWithdraw: ${BlockNumber[i++]}
+        // beforeWinnerPay: ${BlockNumber[i++]}
+        // beforeDestroy: ${BlockNumber[i++]}
+        // 结束: ${BlockNumber[i++]}`)
+    }
     
     // 开始投标
-    console.log(`开始投标`)
     async function startBid() {
+        console.log(`开始投标`)
+        var proof = "0x5a64c5a9743a4d7b346c55d4250716bba6c27a19d3785e5f7641b9c1d7b4d7f7";  // CID
         try {
             console.log(`总共${Accounts.length}个账户`)
             genCiphers(Accounts.length - 1); // auctioneer不参与投标
@@ -98,7 +155,7 @@ async function interact() {
 
             for (let i = 1; i < Accounts.length; i++) {
                 var start = Date.now();
-                const receipt = await MyContract.methods.Bid(ciphers[i - 1], commit.verCommit(i - 1)).send({
+                const receipt = await MyContract.methods.Bid(ciphers[i - 1], proof, commit.verCommit(i - 1)).send({
                     from: Accounts[i],
                     gas: 1000000,
                     gasPrice: 10000000000,
@@ -220,24 +277,8 @@ async function interact() {
         }
     }
 
-    var start = Date.now();
-    await startBid();
-    console.log(`投标耗时：${Date.now() - start} ms\n`);
-    start = Date.now();
-    await ClaimWinner();
-    console.log(`决出获胜者耗时：${Date.now() - start} ms\n`);
-    start = Date.now();
-    await genProofs();
-    console.log(`生成证明耗时：${Date.now() - start} ms\n`);
-    start = Date.now();
-    await withdraw();
-    console.log(`取回押金耗时：${Date.now() - start} ms\n`);
-    start = Date.now();
-    await WinnerPay();
-    console.log(`胜利者支付投标耗时：${Date.now() - start} ms\n`);
-    start = Date.now();
-    await Destroy();
-    console.log(`摧毁合约耗时：${Date.now() - start} ms\n`);
+test();
+
     // try {
     //     // 获取来自合约的常量信息
     //     const total_bidders = await MyContract.methods.total_bidders().call();

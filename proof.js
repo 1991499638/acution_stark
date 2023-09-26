@@ -55,16 +55,6 @@ function verProof(assertions, proof) {
     return [result, Date.now() - start];
 }
 
-//function to check any bid <= bid.last
-function lastCheck(max, bids) {
-    fooStark = genFooStark(max);
-    for (let i = 0; i < bids.length; i++) {
-        var assertions = desAssertions(bids[i], max - bids[i]);
-        var proof = genProof(assertions, bids[i]);
-        var result = verProof(assertions, proof[0]);
-        console.log(`验证第${i+1}份证明: ${result[0]}`)
-    }
-}
 //function to generated all proof
 function genProofAll(max, bids) {
     fooStark = genFooStark(max);
@@ -103,20 +93,4 @@ function test() {
 // test();
 // console.log(`测试完毕\n`)
 // console.log(`${verAnyProof(0, 99, 62)}`);
-module.exports = {genProofAll, verAnyProof}
-// Serialize the proof
-// console.log('序列化证明');
-// let start = Date.now();
-// const buf = fooStark.serialize(proof);
-// fs.writeFileSync('buf.json', buf);
-// const fileBuf = fs.readFileSync('buf.json');
-// assert(fileBuf.length === fooStark.sizeOf(proof));
-// console.log(`Proof serialized in ${Date.now() - start} ms; size: ${Math.round(fileBuf.byteLength / 1024 * 100) / 100} KB`);
-// console.log('-'.repeat(20));
-
-// // Deserialize the proof
-// console.log('反序列化证明');
-// start = Date.now();
-// const parsedProof = fooStark.parse(buf);
-// console.log(`Proof parsed in ${Date.now() - start} ms`);
-// console.log('-'.repeat(20));
+module.exports = {genProof, verProof, genProofAll, verAnyProof}
