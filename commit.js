@@ -2,6 +2,8 @@ var Pedersen = require("./pedersen/main")
 var fs = require("fs")
 var crypto = require('crypto');
 var NodeRSA = require('node-rsa');
+require('dotenv').config();
+
 // p and q, the p is a large prime number, the q is a generator
 // 20 bytes
 const pederson = new Pedersen(
@@ -16,14 +18,7 @@ const publicKey =
 MEkwDQYJKoZIhvcNAQEBBQADOAAwNQIuAM663sfXuONaQNWNgP4lhZRLfbF13+Bg
 nZ55pUhcWDDdHvxEwpH24ytm3o/TSwIDAQAB
 -----END PUBLIC KEY-----`
-const privateKey = 
-`-----BEGIN RSA PRIVATE KEY-----
-MIHkAgEAAi4Azrrex9e441pA1Y2A/iWFlEt9sXXf4GCdnnmlSFxYMN0e/ETCkfbj
-K2bej9NLAgMBAAECLUmOtmxXNsM2vvD9i5NimHgesFevgHxUwv+qQPHOiORgtiOe
-sS7mb+Wh2whl6QIXD2IPjBltgy/bR4HgwhyuXQotZy2fvl8CFw1wVjCgke0Npbft
-AMIl3biIqgS727qVAhcM4e5rQZA44QceZ2I2rZZITJGhas/wuQIXCy4OdgvO+m/l
-EpsXi2ynBNKk5qVGCfUCFwaaA83r7fiJELfNty9Ca7rDkNa/I9Wd
------END RSA PRIVATE KEY-----`
+const privateKey = process.env.PRIVATE_KEY
 const encrypt = new NodeRSA(publicKey);
 const decrypt = new NodeRSA(privateKey);
 // // 公钥加密
