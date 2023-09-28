@@ -13,16 +13,16 @@ contract Auction{
     uint public highest_bid;
     uint public V = 100; //设置默认投标上限
     uint public fairnessFees;          //押金
-
+    string public publicKey = "MEkwDQYJKoZIhvcNAQEBBQADOAAwNQIuAM663sfXuONaQNWNgP4lhZRLfbF13+BgnZ55pUhcWDDdHvxEwpH24ytm3o/TSwIDAQAB";
 
 // 拍卖过程中的不同状态
     bool public auctioneer_specification = false; 
     bool public bidder_qualified = false;
-    bool startBid = false;
-    bool bidder_win = false;
-    bool withdrawLock = false;
-    bool testing = false;
-    bool winner_cipher = false;
+    bool public startBid = false;
+    bool public bidder_win = false;
+    bool public withdrawLock = false;
+    bool public testing = false;
+    bool public winner_cipher = false;
 
 // 拍卖过程中的不同阶段时间安排
     uint init;
@@ -120,7 +120,7 @@ contract Auction{
     // 开始投标
     // 密文需要后端使用RSA加密;0xfffe0102030405060708fffe0102030405060708fffe
     // 返回值即为bidder编号
-    function Bid(string cipher, bytes32 proof, bool pVerify) public payable returns (uint){
+    function Bid(string cipher, bool pVerify) public payable returns (uint){
         require(existBids(msg.sender) || testing, "用户不满足资格");
         require(indexs.length < maxBiddersCount, "投标成员人数已满"); //available slot    
         require(msg.value >= fairnessFees, "账户余额不足以支付押金");  //paying fees
@@ -129,7 +129,7 @@ contract Auction{
         require(Bids[msg.sender].existing == false, "账户已投标"); //first bid
         require(pVerify, "承诺验证不成功");
         total_bidders++;
-        Bids[msg.sender] = bids(cipher, proof, true, false); 
+        Bids[msg.sender] = bids(cipher,'', true, false); 
         indexs.push(msg.sender);
         return indexs.length;
     }
@@ -148,6 +148,14 @@ contract Auction{
         bidder_win = true;
     }
 
+    // 生成证明
+    function generateProof(bytes32 _proof) public {
+        require((block.number<verify && block.number>submit) || testing, "不在时间段内");
+        require(bidder_win, "拍卖还未决出获胜者");
+        require(Bids[msg.sender].existing == true, "账户不存在");
+        Bids[msg.sender].proof = _proof; 
+    }
+
     function getBid() public view returns (string, bytes32){
         return (Bids[msg.sender].cipher, Bids[msg.sender].proof);
     } 
@@ -163,7 +171,7 @@ contract Auction{
     // 在后端进行验证, 测试环境下并没有设计验证失败的情况
     function Verify(bool proofVerify, string _cipher) external {
         require(proofVerify, "证明验证未通过");
-        require(keccak256(abi.encodePacked(_cipher)) == keccak256(abi.encodePacked(Bids[winning_bidder].cipher)), "承诺验证未通过");
+        require(keccak256(abi.encodePacked(_cipher)) == keccak256(abi.encodePacked(Bids[msg.sender].cipher)), "承诺验证未通过");
         winner_cipher = true;
     }
 
@@ -190,11 +198,5 @@ contract Auction{
     function Destroy() public onlyauctioneer {
         require(block.number > destroy || testing, "此时还不能摧毁合约");  // 避免拍卖方提前摧毁合约捞钱
         selfdestruct(auctioneer);
-    }
-}
-
-contract Live is Auction {
-    constructor() public Auction(1, 1, 1, 1, 1, 0x5a64c5a9743a4d7b346c55d4250716bba6c27a19d3785e5f7641b9c1d7b4d7f7, 0x5a64c5a9743a4d7b346c55d4250716bba6c27a19d3785e5f7641b9c1d7b4d7f7, 100, 1, true){
-        
     }
 }

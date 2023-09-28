@@ -39,6 +39,7 @@ function genCiphers(count) {
 // commit.genCommit(message)
 // commit.verCommit(3)
 
+var gasDeploy = BigInt(0);
 async function main() {
     Accounts = await web3.eth.getAccounts();
     defaultAccount = Accounts[0];
@@ -49,13 +50,15 @@ async function main() {
     // }
 
     var start = Date.now();
-    await Deploy();
+    gasDeploy = await Deploy();
     console.log(`部署合约耗时：${Date.now() - start} ms\n`)
     await interact();
     console.log(`拍卖总耗时：${Date.now() - start} ms`)
 }
 
+
 async function Deploy() {
+    var gas = BigInt(0);
     try {
         const parameter = [init, submit, verify, winner_pay, destroy, product_description, technical_specification, maxBiddersCount, fairnessFees, testing];
         const MyContract = new web3.eth.Contract(abi);
@@ -64,10 +67,10 @@ async function Deploy() {
             data: `0x${bin}`,
             arguments: parameter,
         });
-        const gas = await myContract.estimateGas({
+        gas = await myContract.estimateGas({
             from: defaultAccount,
         });
-        console.log('预估gas:', gas);
+        // console.log('预估gas:', gas);
         try {
             // Deploy the contract to the Ganache network
             const tx = await myContract.send({
@@ -84,6 +87,7 @@ async function Deploy() {
     } catch (error) {
         console.error('合约部署失败:', error);
     }
+    return gas;
 }
 
 async function interact() {
@@ -95,55 +99,78 @@ async function interact() {
     async function test() {
         // 开始投标
         var BlockNumber = [];
+        var gas = [];
         var i = 0;
+        var j = 0;
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         var start = Date.now();
-        await startBid();
+        gas[j++] = await startBid();
         console.log(`投标耗时：${Date.now() - start} ms\n`);
 
         // 决出获胜者
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
-        await ClaimWinner();
+        gas[j++] = await ClaimWinner();
         console.log(`决出获胜者耗时：${Date.now() - start} ms\n`);
 
         // 生成证明
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
-        await genProofs();
+        gas[j++] = await genProofs();
         console.log(`生成证明耗时：${Date.now() - start} ms\n`);
 
         // 揭示投标
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
-        await RevealAndVerify();
+        gas[j++] = await RevealAndVerify();
         console.log(`揭示投标耗时：${Date.now() - start} ms\n`);
 
         // 验证
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
-        await verifyWinnerBid();
+        gas[j++] = await verifyWinnerBid();
         console.log(`验证投标耗时：${Date.now() - start} ms\n`);
 
         // 胜者支付出价
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
-        await WinnerPay();
+        gas[j++] = await WinnerPay();
         console.log(`胜利者支付投标耗时：${Date.now() - start} ms\n`);
 
         // // 退还押金
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
-        await withdraw();
+        gas[j++] = await withdraw();
         console.log(`取回押金耗时：${Date.now() - start} ms\n`);
 
         // 摧毁合约
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
-        await Destroy();
+        gas[j++] = await Destroy();
         console.log(`摧毁合约耗时：${Date.now() - start} ms\n`);
         BlockNumber[i++] = await web3.eth.getBlockNumber();
 
+        j = 0;
+        function TotalGas(gas){
+            gasTotal = BigInt(0);
+            for (let i = 0; i < gas.length; i++) {
+                gasTotal = gasTotal + gas[i];
+            }
+            return gasTotal;
+        }
+        var data = `gas消耗汇总：
+        部署合约：${gasDeploy}
+        投标: ${gas[j++]}
+        决出胜者: ${gas[j++]}
+        生成证明：${gas[j++]}
+        揭示投标：${gas[j++]}
+        验证：${gas[j++]}
+        胜者支付：${gas[j++]}
+        退还押金：${gas[j++]}
+        摧毁合约：${gas[j++]}
+        总计：${gasDeploy + TotalGas(gas)}`
+        console.log(data)
+        fs.writeFileSync('data/23_9_28.txt', data)
         // i=0;
         // console.log(`
         // beforeBid: ${BlockNumber[i++]}
@@ -158,13 +185,13 @@ async function interact() {
     // 开始投标
     async function startBid() {
         console.log(`开始投标`)
+        var gasTotal = BigInt(0);
         try {
             console.log(`总共${Accounts.length}个账户    ${Accounts.length-1}个投标者`)
             genCiphers(Accounts.length - 1); // auctioneer不参与投标
-            var gasTotal = BigInt(0);
 
             for (let i = 1; i < Accounts.length; i++) {
-                var start = Date.now();
+                // var start = Date.now();
                 const receipt = await MyContract.methods.Bid(commit.getCommit(i - 1), commit.verCommit(i - 1)).send({
                     from: Accounts[i],
                     gas: 1000000,
@@ -174,11 +201,11 @@ async function interact() {
                 gasTotal = gasTotal + receipt.gasUsed;
                 // console.log(`    Account[${i}]投标成功    消耗gas：${receipt.gasUsed}    耗时：${Date.now() - start} ms`);// 177336
             }
-            var b;
             console.log(`投标结束    当前合约余额：${web3.utils.fromWei(await web3.eth.getBalance(deployedAddress), 'finney')} finney    总共消耗gas：${gasTotal}`)
         } catch (error) {
             console.error(`投标失败\n${error}`)
         }
+        return gasTotal
     }
 
 
@@ -188,8 +215,8 @@ async function interact() {
     var index;  //index+1是胜者序列
     var proofArray = [];
     async function ClaimWinner() {
-
         console.log(`开始决出胜者`)
+        var gasTotal = BigInt(0);
         try {
             for (let i = 1; i < Accounts.length; i++) {
                 // call 不消耗gas
@@ -217,21 +244,25 @@ async function interact() {
             // console.log(`验证承诺：${pVerify}`)
             // Accounts[index + 1] 是胜者; send会改变合约状态 call表示只读
             var receipt = await MyContract.methods.ClaimWinner(Accounts[index + 1], bids[index], pVerify).send({ from: defaultAccount })
+            gasTotal = receipt.gasUsed;
             console.log(`  获胜者已决出!\n    消耗gas：${receipt.gasUsed}`)
         } catch (error) {
             console.error(`决出获胜者失败\n${error}`)
         }
+        return gasTotal;
     }
 
     // 生成证明
     async function genProofs() {
         console.log(`开始生成证明`)
+        var gasTotal = BigInt(0);
         try {
             var proofCID = "0x5a64c5a9743a4d7b346c55d4250716bba6c27a19d3785e5f7641b9c1d7b4d7f7";  // CID
             proof.genProofAll(max_bid, bids)
             try {
                 for (let i = 1; i < Accounts.length; i++) {
-                    await MyContract.methods.generateProof(proofCID).send({ from: Accounts[i] })
+                    var receipt = await MyContract.methods.generateProof(proofCID).send({ from: Accounts[i] })
+                    gasTotal = receipt.gasUsed;
                 }
             } catch (error) {
                 console.error(`生成证明失败！ ${error}`)
@@ -241,11 +272,13 @@ async function interact() {
         } catch (error) {
             console.error(`证明生成失败\n${error}`)
         }
+        return gasTotal;
     }
 
     // 揭示投标
     async function RevealAndVerify() {
         console.log(`开始揭示承诺`)
+        var gasTotal = BigInt(0);
         try {
             const winner = await MyContract.methods.Reveal().call({ from: Accounts[0] });
             var winnerBid = winner[0];
@@ -256,18 +289,21 @@ async function interact() {
         } catch (error) {
             
         }
+        return gasTotal;
     }
 
     // 开始验证
     async function verifyWinnerBid() {
         console.log(`开始验证胜利者投标`)
+        var gasTotal = BigInt(0);
         try {
             // 这里直接一次验证所有证明
             var result = true;
             for (let i = 0; i < bids.length; i++) {
                 resultProof = proof.verAnyProof(i, max_bid, bids[i]);
                 try {
-                    await MyContract.methods.Verify(resultProof, commit.getCommit(i)).send({ from: Accounts[i+1] });
+                    var receipt = await MyContract.methods.Verify(resultProof, commit.getCommit(i)).send({ from: Accounts[i+1] });
+                    gasTotal = receipt.gasUsed;
                 } catch (error) {
                     console.log(`账户${i+1}验证失败  ${error}`)
                 }
@@ -279,11 +315,13 @@ async function interact() {
         } catch (error) {
             console.error(`验证获胜者投标失败：${error}`)
         }
+        return gasTotal;
     }
 
     // 胜利者支付bid
     async function WinnerPay() {
         console.log(`胜利者开始支付投标`)
+        var gasTotal = BigInt(0);
         // console.log(`${Accounts[index+1]}\n${await MyContract.methods.winning_bidder().call({from: defaultAccount})}`)
         // console.log(`${await MyContract.methods.winner_cipher().call({from: defaultAccount})}`)
         try {
@@ -293,10 +331,12 @@ async function interact() {
                 gasPrice: 10000000000,
                 value: web3.utils.toWei(max_bid - fairnessFees, 'finney'),
             });
+            gasTotal = receipt.gasUsed;
             console.log(`当前合约余额：${web3.utils.fromWei(await web3.eth.getBalance(deployedAddress), 'finney')} finney    消耗gas: ${receipt.gasUsed}`)
         } catch (error) {
             console.error(`胜利者支付投标失败${error}`)
         }
+        return gasTotal;
     }
 
     // 取回押金
@@ -309,28 +349,32 @@ async function interact() {
         try {
             for (let i = 1; i < Accounts.length; i++) {
                 if (i != index + 1) {
-                    var start = Date.now();
+                    // var start = Date.now();
                     var receipt = await MyContract.methods.Withdraw().send({ from: Accounts[i] });
                     gasTotal = gasTotal + receipt.gasUsed;
-                    console.log(`    账户${i}已取回押金    gas: ${receipt.gasUsed}    耗时：${Date.now() - start} ms`)
+                    // console.log(`    账户${i}已取回押金    gas: ${receipt.gasUsed}    耗时：${Date.now() - start} ms`)
                 }
             }
             console.log(`全部押金取回成功    当前合约余额：${web3.utils.fromWei(await web3.eth.getBalance(deployedAddress), 'finney')} finney    总共消耗gas: ${gasTotal}`)
         } catch (error) {
             console.error(`取回押金失败 ${error}`)
         }
+        return gasTotal;
     }
 
     // 销毁合约
     async function Destroy() {
         console.log(`开始摧毁合约`)
+        var gasTotal = BigInt(0);
         try {
             console.log(`当前合约余额：${web3.utils.fromWei(await web3.eth.getBalance(deployedAddress), 'finney')} finney\n当前拍卖商余额：${web3.utils.fromWei(await web3.eth.getBalance(defaultAccount), 'finney')} finney`)
             var receipt = await MyContract.methods.Destroy().send({ from: defaultAccount });
+            gasTotal = receipt.gasUsed;
             console.log(`摧毁合约成功\n  当前拍卖商余额：${web3.utils.fromWei(await web3.eth.getBalance(defaultAccount), 'finney')} finney    消耗gas: ${receipt.gasUsed}`)
         } catch (error) {
             console.error(`摧毁合约失败:${error}`)
         }
+        return gasTotal;
     }
 
     test();
