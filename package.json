@@ -25,6 +25,7 @@
     "@guildofweavers/merkle": "0.3.x",
     "big-integer": "^1.6.51",
     "crypto": "^1.0.1",
+    "node-rsa": "^1.1.1",
     "web3": "^4.1.1"
   }
 }

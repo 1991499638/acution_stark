@@ -1,10 +1,10 @@
-// const crypto = require('crypto');
+const crypto = require('crypto');
 
-// // 哈希加密示例
-// const hash = crypto.createHash('sha256');
-// hash.update('Hello, World!');
-// const hashedData = hash.digest('hex');
-//     console.log(`hash: ${hashedData}`)
+// 哈希加密示例
+const hash = crypto.createHash('sha256');
+hash.update('Hello, World!');
+const hashedData = hash.digest('hex');
+    console.log(`hash: ${hashedData}`)
 
 // 生成 RSA 密钥对并进行加密示例
 const NodeRSA = require('node-rsa');

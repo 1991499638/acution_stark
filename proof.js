@@ -71,12 +71,12 @@ function genProofAll(max, bids) {
 function verAnyProof(i, max, bids) {
     fooStark = genFooStark(max);
     var assertions = desAssertions(bids, max - bids);
-    // console.log(`开始验证`)
     // Read proof from file and Deserialize the proof 
     var fileBuf = fs.readFileSync(`proof/buf${i}.json`);
     var parsedProof = fooStark.parse(fileBuf);
     var result = verProof(assertions, parsedProof);
-    console.log(`  账户${i}验证结果：${result[0]}   耗时：${result[1]} ms`)
+    // console.log(`  账户${i}验证结果：${result[0]}   耗时：${result[1]} ms`)
+    return result[0]
 }
 
 function test() {
