@@ -13,11 +13,7 @@ const pederson = new Pedersen(
 
 var secret = '763cff582aab107fa0c48ecdd17bedc74e771c22'
 // var message = ['7650','760','750','765','650',]
-const publicKey = 
-`-----BEGIN PUBLIC KEY-----
-MEkwDQYJKoZIhvcNAQEBBQADOAAwNQIuAM663sfXuONaQNWNgP4lhZRLfbF13+Bg
-nZ55pUhcWDDdHvxEwpH24ytm3o/TSwIDAQAB
------END PUBLIC KEY-----`
+const publicKey = process.env.PUBLIC_KEY
 const privateKey = process.env.PRIVATE_KEY
 const encrypt = new NodeRSA(publicKey);
 const decrypt = new NodeRSA(privateKey);
