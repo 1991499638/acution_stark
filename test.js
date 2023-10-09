@@ -36,8 +36,6 @@ function genCiphers(count) {
     }
     commit.genCommit(message);
 }
-// commit.genCommit(message)
-// commit.verCommit(3)
 
 var gasDeploy = BigInt(0);
 async function main() {
@@ -91,7 +89,6 @@ async function Deploy() {
 }
 
 async function interact() {
-    // console.log('holle')
 
     const deployedAddress = fs.readFileSync('MyContractAddress.bin', 'utf8');
     const MyContract = new web3.eth.Contract(abi, deployedAddress);
@@ -171,15 +168,6 @@ async function interact() {
         总计：${gasDeploy + TotalGas(gas)}`
         console.log(data)
         fs.writeFileSync('data/23_9_28.txt', data)
-        // i=0;
-        // console.log(`
-        // beforeBid: ${BlockNumber[i++]}
-        // beforeClaimWinner: ${BlockNumber[i++]}
-        // beforeGenProofs: ${BlockNumber[i++]}
-        // beforeWithdraw: ${BlockNumber[i++]}
-        // beforeWinnerPay: ${BlockNumber[i++]}
-        // beforeDestroy: ${BlockNumber[i++]}
-        // 结束: ${BlockNumber[i++]}`)
     }
 
     // 开始投标
@@ -377,32 +365,10 @@ async function interact() {
         return gasTotal;
     }
 
-    test();
-
-    // try {
-    //     // 获取来自合约的常量信息
-    //     const total_bidders = await MyContract.methods.total_bidders().call();
-    //     console.log('my number value: ' + total_bidders);
-
-    //     // Increment my number
-    //     const receipt = await MyContract.methods.Bid("1844362da5fb73b13959ccfaae0b9fda8ac69319*d3e310e8b7213979a90b2e432a17858d527d1b10*45",true).send({
-    //         from: Accounts[1],
-    //         gas: 1000000,
-    //         gasPrice: 10000000000,
-    //         value: web3.utils.toWei('1', 'ether'),
-    //     });
-    //     console.log('Transaction Hash: ' + typeof receipt);
-    //     // console.dir(receipt);
-
-    //     // Get the updated value of my number
-    //     const myNumberUpdated = await MyContract.methods.total_bidders().call();
-    //     console.log('my number updated value: ' + myNumberUpdated);
-    // } catch (error) {
-    //     console.error(error);
-    // }
+    // var t1 = Date.now();
+    await test();
+    // console.log(`总耗时：${Date.now() - t1}`);
 }
-
 main();
-
 
 
