@@ -38,6 +38,7 @@ function genCiphers(count) {
 }
 
 var gasDeploy = BigInt(0);
+var timeDeploy = 0;
 async function main() {
     Accounts = await web3.eth.getAccounts();
     defaultAccount = Accounts[0];
@@ -49,6 +50,7 @@ async function main() {
 
     var start = Date.now();
     gasDeploy = await Deploy();
+    timeDeploy = Date.now() - start;
     console.log(`部署合约耗时：${Date.now() - start} ms\n`)
     await interact();
     console.log(`拍卖总耗时：${Date.now() - start} ms`)
@@ -97,53 +99,62 @@ async function interact() {
         // 开始投标
         var BlockNumber = [];
         var gas = [];
+        var time = [];
         var i = 0;
         var j = 0;
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         var start = Date.now();
         gas[j++] = await startBid();
+        time[j-1] = Date.now() - start;
         console.log(`投标耗时：${Date.now() - start} ms\n`);
 
         // 决出获胜者
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
         gas[j++] = await ClaimWinner();
+        time[j-1] = Date.now() - start;
         console.log(`决出获胜者耗时：${Date.now() - start} ms\n`);
 
         // 生成证明
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
         gas[j++] = await genProofs();
+        time[j-1] = Date.now() - start;
         console.log(`生成证明耗时：${Date.now() - start} ms\n`);
 
         // 揭示投标
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
         gas[j++] = await RevealAndVerify();
+        time[j-1] = Date.now() - start;
         console.log(`揭示投标耗时：${Date.now() - start} ms\n`);
 
         // 验证
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
         gas[j++] = await verifyWinnerBid();
+        time[j-1] = Date.now() - start;
         console.log(`验证投标耗时：${Date.now() - start} ms\n`);
 
         // 胜者支付出价
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
         gas[j++] = await WinnerPay();
+        time[j-1] = Date.now() - start;
         console.log(`胜利者支付投标耗时：${Date.now() - start} ms\n`);
 
         // // 退还押金
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
         gas[j++] = await withdraw();
+        time[j-1] = Date.now() - start;
         console.log(`取回押金耗时：${Date.now() - start} ms\n`);
 
         // 摧毁合约
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
         gas[j++] = await Destroy();
+        time[j-1] = Date.now() - start;
         console.log(`摧毁合约耗时：${Date.now() - start} ms\n`);
         BlockNumber[i++] = await web3.eth.getBlockNumber();
 
@@ -155,17 +166,17 @@ async function interact() {
             }
             return gasTotal;
         }
-        var data = `gas消耗汇总：
-        部署合约：${gasDeploy}
-        投标: ${gas[j++]}
-        决出胜者: ${gas[j++]}
-        生成证明：${gas[j++]}
-        揭示投标：${gas[j++]}
-        验证：${gas[j++]}
-        胜者支付：${gas[j++]}
-        退还押金：${gas[j++]}
-        摧毁合约：${gas[j++]}
-        总计：${gasDeploy + TotalGas(gas)}`
+    var data = `消耗汇总：
+    部署合约：${timeDeploy}ms   ${gasDeploy}  
+    投  标:   ${time[j]}ms    ${gas[j++]}   
+    决出胜者: ${time[j]}ms    ${gas[j++]}   
+    生成证明：${time[j]}ms    ${gas[j++]}   
+    揭示投标：${time[j]}ms    ${gas[j++]}   
+    验  证：  ${time[j]}ms    ${gas[j++]}   
+    胜者支付：${time[j]}ms    ${gas[j++]}   
+    退还押金：${time[j]}ms    ${gas[j++]}   
+    摧毁合约：${time[j]}ms    ${gas[j++]}   
+    总  计gas：  ${gasDeploy + TotalGas(gas)}  `
         console.log(data)
         fs.writeFileSync('data/23_9_28.txt', data)
     }
