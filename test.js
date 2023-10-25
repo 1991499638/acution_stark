@@ -166,6 +166,13 @@ async function interact() {
             }
             return gasTotal;
         }
+        function TotalTime(time){
+            timeTotal = 0;
+            for (let i = 0; i < time.length; i++) {
+                timeTotal = timeTotal + time[i];
+            }
+            return timeTotal;
+        }
     // var data = `消耗汇总：
     // 部署合约：${timeDeploy}ms   ${gasDeploy}  
     // 投  标:   ${time[j]}ms    ${gas[j++]}   
@@ -176,9 +183,10 @@ async function interact() {
     // 胜者支付：${time[j]}ms    ${gas[j++]}   
     // 退还押金：${time[j]}ms    ${gas[j++]}   
     // 摧毁合约：${time[j]}ms    ${gas[j++]}   
-    // 总  计gas：  ${gasDeploy + TotalGas(gas)}  `
+    // 总  计gas：  ${gasDeploy + Total(gas)}  `
     var i=0 , j=0
 var data = `{
+    "accounts": ${Accounts.length},
     "time":[
         {"deploy": ${timeDeploy}},
         {"bid": ${time[i++]}},
@@ -188,7 +196,8 @@ var data = `{
         {"verifyWinnerBid": ${time[i++]}},
         {"winnerPay": ${time[i++]}},
         {"withdraw": ${time[i++]}},
-        {"destroy": ${time[i++]}}
+        {"destroy": ${time[i++]}},
+        {"totalTime": ${timeDeploy + TotalTime(time)}}
     ],
     "gas":[
         {"deploy": ${gasDeploy}},
@@ -202,9 +211,16 @@ var data = `{
         {"Destroy": ${gas[j++]}},
         {"totalGas": ${gasDeploy + TotalGas(gas)}}
     ]
-}`
-        console.log(data)
-        fs.writeFileSync('data/data.json', data)
+},
+`
+        // console.log(data)
+        // fs.writeFileSync('data/data.json', data)
+        try {
+            fs.appendFileSync(`data/${Accounts.length}.json`, data);
+            console.log('Data was appended to the file.');
+        } catch (err) {
+            console.error('Error appending data to the file:', err);
+        }
     }
 
     // 开始投标
