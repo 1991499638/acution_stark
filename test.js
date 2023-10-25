@@ -1,5 +1,7 @@
 const { Web3 } = require('web3');
 const fs = require('fs')
+const os = require('os');
+
 const commit = require('./commit')
 const proof = require('./proof')
 // Connect to the Ethereum network using the HTTP provider
@@ -213,11 +215,12 @@ var data = `{
     ]
 },
 `
-        // console.log(data)
-        // fs.writeFileSync('data/data.json', data)
+//         console.log('操作系统类型:', os.type());
+// console.log('CPU 架构:', os.arch());
+// console.log('主机名:', os.hostname());
         try {
-            fs.appendFileSync(`data/${Accounts.length}.json`, data);
-            console.log('Data was appended to the file.');
+            fs.appendFileSync(`data/${Accounts.length}/${os.hostname()}_${Accounts.length}_${os.type()}_${os.arch()}.json`, data);
+            console.log(`${os.hostname()} Data was appended to the file.`);
         } catch (err) {
             console.error('Error appending data to the file:', err);
         }
