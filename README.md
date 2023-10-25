@@ -7,5 +7,11 @@
 ### geth：
 
 ### ganache：
+    config：chainId：10；accounts：10--100；other default
 
 ## 2：运行项目
+``` git clone git@github.com:1991499638/acution_stark.git ```
+``` cd acution_stark ```
+``` npm i ```
+``` npm run test ```
+注意，记得更改.env_example为.env
