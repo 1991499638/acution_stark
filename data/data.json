@@ -1,0 +1,25 @@
+{
+    "time":[
+        {"deploy": 104},
+        {"bid": 2643},
+        {"claimWinner": 717},
+        {"genProofs": 2326},
+        {"revealBid": 11},
+        {"verifyWinnerBid": 3125},
+        {"winnerPay": 13},
+        {"withdraw": 1055},
+        {"destroy": 11}
+    ],
+    "gas":[
+        {"deploy": 2975801},
+        {"bid": 22895396},
+        {"claimWinner": 83501},
+        {"genProofs": 51403},
+        {"revealBid": 0},
+        {"verifyWinnerBid": 41406},
+        {"winnerPay": 36324},
+        {"withdraw": 3979388},
+        {"Destroy": 31336},
+        {"totalGas": 30094555}
+    ]
+}

@@ -166,19 +166,45 @@ async function interact() {
             }
             return gasTotal;
         }
-    var data = `消耗汇总：
-    部署合约：${timeDeploy}ms   ${gasDeploy}  
-    投  标:   ${time[j]}ms    ${gas[j++]}   
-    决出胜者: ${time[j]}ms    ${gas[j++]}   
-    生成证明：${time[j]}ms    ${gas[j++]}   
-    揭示投标：${time[j]}ms    ${gas[j++]}   
-    验  证：  ${time[j]}ms    ${gas[j++]}   
-    胜者支付：${time[j]}ms    ${gas[j++]}   
-    退还押金：${time[j]}ms    ${gas[j++]}   
-    摧毁合约：${time[j]}ms    ${gas[j++]}   
-    总  计gas：  ${gasDeploy + TotalGas(gas)}  `
+    // var data = `消耗汇总：
+    // 部署合约：${timeDeploy}ms   ${gasDeploy}  
+    // 投  标:   ${time[j]}ms    ${gas[j++]}   
+    // 决出胜者: ${time[j]}ms    ${gas[j++]}   
+    // 生成证明：${time[j]}ms    ${gas[j++]}   
+    // 揭示投标：${time[j]}ms    ${gas[j++]}   
+    // 验  证：  ${time[j]}ms    ${gas[j++]}   
+    // 胜者支付：${time[j]}ms    ${gas[j++]}   
+    // 退还押金：${time[j]}ms    ${gas[j++]}   
+    // 摧毁合约：${time[j]}ms    ${gas[j++]}   
+    // 总  计gas：  ${gasDeploy + TotalGas(gas)}  `
+    var i=0 , j=0
+var data = `{
+    "time":[
+        {"deploy": ${timeDeploy}},
+        {"bid": ${time[i++]}},
+        {"claimWinner": ${time[i++]}},
+        {"genProofs": ${time[i++]}},
+        {"revealBid": ${time[i++]}},
+        {"verifyWinnerBid": ${time[i++]}},
+        {"winnerPay": ${time[i++]}},
+        {"withdraw": ${time[i++]}},
+        {"destroy": ${time[i++]}}
+    ],
+    "gas":[
+        {"deploy": ${gasDeploy}},
+        {"bid": ${gas[j++]}},
+        {"claimWinner": ${gas[j++]}},
+        {"genProofs": ${gas[j++]}},
+        {"revealBid": ${gas[j++]}},
+        {"verifyWinnerBid": ${gas[j++]}},
+        {"winnerPay": ${gas[j++]}},
+        {"withdraw": ${gas[j++]}},
+        {"Destroy": ${gas[j++]}},
+        {"totalGas": ${gasDeploy + TotalGas(gas)}}
+    ]
+}`
         console.log(data)
-        fs.writeFileSync('data/23_9_28.txt', data)
+        fs.writeFileSync('data/data.json', data)
     }
 
     // 开始投标
