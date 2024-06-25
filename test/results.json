@@ -1,0 +1,98 @@
+[
+  {
+    "inputSize": 10,
+    "steps": 63,
+    "genTime": 22,
+    "verTime": 14
+  },
+  {
+    "inputSize": 10,
+    "steps": 127,
+    "genTime": 19,
+    "verTime": 12
+  },
+  {
+    "inputSize": 10,
+    "steps": 255,
+    "genTime": 31,
+    "verTime": 25
+  },
+  {
+    "inputSize": 10,
+    "steps": 511,
+    "genTime": 46,
+    "verTime": 28
+  },
+  {
+    "inputSize": 100,
+    "steps": 63,
+    "genTime": 13,
+    "verTime": 13
+  },
+  {
+    "inputSize": 100,
+    "steps": 127,
+    "genTime": 13,
+    "verTime": 13
+  },
+  {
+    "inputSize": 100,
+    "steps": 255,
+    "genTime": 28,
+    "verTime": 19
+  },
+  {
+    "inputSize": 100,
+    "steps": 511,
+    "genTime": 41,
+    "verTime": 26
+  },
+  {
+    "inputSize": 1000,
+    "steps": 63,
+    "genTime": 12,
+    "verTime": 11
+  },
+  {
+    "inputSize": 1000,
+    "steps": 127,
+    "genTime": 12,
+    "verTime": 9
+  },
+  {
+    "inputSize": 1000,
+    "steps": 255,
+    "genTime": 27,
+    "verTime": 22
+  },
+  {
+    "inputSize": 1000,
+    "steps": 511,
+    "genTime": 39,
+    "verTime": 30
+  },
+  {
+    "inputSize": 10000,
+    "steps": 63,
+    "genTime": 13,
+    "verTime": 10
+  },
+  {
+    "inputSize": 10000,
+    "steps": 127,
+    "genTime": 13,
+    "verTime": 9
+  },
+  {
+    "inputSize": 10000,
+    "steps": 255,
+    "genTime": 29,
+    "verTime": 21
+  },
+  {
+    "inputSize": 10000,
+    "steps": 511,
+    "genTime": 43,
+    "verTime": 27
+  }
+]

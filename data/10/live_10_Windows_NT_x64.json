@@ -1,0 +1,81 @@
+{
+    "accounts": 10,
+    "time":[
+        {"deploy": 180},
+        {"bid": 339},
+        {"claimWinner": 122},
+        {"genProofs": 288},
+        {"revealBid": 13},
+        {"verifyWinnerBid": 330},
+        {"winnerPay": 19},
+        {"withdraw": 107},
+        {"destroy": 17},
+        {"totalTime": 1415}
+    ],
+    "gas":[
+        {"deploy": 2975801},
+        {"bid": 2114061},
+        {"claimWinner": 83501},
+        {"genProofs": 53513},
+        {"revealBid": 0},
+        {"verifyWinnerBid": 41406},
+        {"winnerPay": 38434},
+        {"withdraw": 324848},
+        {"Destroy": 33527},
+        {"totalGas": 5665091}
+    ]
+},
+{
+    "accounts": 10,
+    "time":[
+        {"deploy": 176},
+        {"bid": 338},
+        {"claimWinner": 118},
+        {"genProofs": 344},
+        {"revealBid": 13},
+        {"verifyWinnerBid": 337},
+        {"winnerPay": 19},
+        {"withdraw": 114},
+        {"destroy": 15},
+        {"totalTime": 1474}
+    ],
+    "gas":[
+        {"deploy": 2975801},
+        {"bid": 2114061},
+        {"claimWinner": 83501},
+        {"genProofs": 53513},
+        {"revealBid": 0},
+        {"verifyWinnerBid": 41406},
+        {"winnerPay": 38434},
+        {"withdraw": 324848},
+        {"Destroy": 33527},
+        {"totalGas": 5665091}
+    ]
+},
+{
+    "accounts": 10,
+    "time":[
+        {"deploy": 105},
+        {"bid": 276},
+        {"claimWinner": 109},
+        {"genProofs": 278},
+        {"revealBid": 11},
+        {"verifyWinnerBid": 308},
+        {"winnerPay": 15},
+        {"withdraw": 102},
+        {"destroy": 13},
+        {"totalTime": 1217}
+    ],
+    "gas":[
+        {"deploy": 2975801},
+        {"bid": 2114049},
+        {"claimWinner": 83501},
+        {"genProofs": 53513},
+        {"revealBid": 0},
+        {"verifyWinnerBid": 41418},
+        {"winnerPay": 38434},
+        {"withdraw": 324848},
+        {"Destroy": 33527},
+        {"totalGas": 5665091}
+    ]
+},

@@ -26,6 +26,7 @@ var fairnessFees = 1;  // ETH
 var testing = true;
 
 // 调用合约涉及的一些参数
+var totalAccounts;
 var Accounts;
 var defaultAccount;
 
@@ -42,7 +43,8 @@ function genCiphers(count) {
 var gasDeploy = BigInt(0);
 var timeDeploy = 0;
 async function main() {
-    Accounts = await web3.eth.getAccounts();
+    totalAccounts = await web3.eth.getAccounts();
+    Accounts = totalAccounts.slice(0, 10);
     defaultAccount = Accounts[0];
     // 解锁所有账户，为了方便实验中所有账户的密码均设为666666
     // for (let i = 0; i < Accounts.length; i++) {
@@ -108,56 +110,64 @@ async function interact() {
         var start = Date.now();
         gas[j++] = await startBid();
         time[j-1] = Date.now() - start;
-        console.log(`投标耗时：${Date.now() - start} ms\n`);
+        console.log(`投标耗时：${Date.now() - start} ms`);
+        console.log('====================================\n\n');
 
         // 决出获胜者
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
         gas[j++] = await ClaimWinner();
         time[j-1] = Date.now() - start;
-        console.log(`决出获胜者耗时：${Date.now() - start} ms\n`);
+        console.log(`决出获胜者耗时：${Date.now() - start} ms`);
+        console.log('====================================\n\n');
 
         // 生成证明
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
         gas[j++] = await genProofs();
         time[j-1] = Date.now() - start;
-        console.log(`生成证明耗时：${Date.now() - start} ms\n`);
+        console.log(`生成证明耗时：${Date.now() - start} ms`);
+        console.log('====================================\n\n');
 
         // 揭示投标
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
         gas[j++] = await RevealAndVerify();
         time[j-1] = Date.now() - start;
-        console.log(`揭示投标耗时：${Date.now() - start} ms\n`);
+        console.log(`揭示投标耗时：${Date.now() - start} ms`);
+        console.log('====================================\n\n');
 
         // 验证
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
         gas[j++] = await verifyWinnerBid();
         time[j-1] = Date.now() - start;
-        console.log(`验证投标耗时：${Date.now() - start} ms\n`);
+        console.log(`验证投标耗时：${Date.now() - start} ms`);
+        console.log('====================================\n\n');
 
         // 胜者支付出价
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
         gas[j++] = await WinnerPay();
         time[j-1] = Date.now() - start;
-        console.log(`胜利者支付投标耗时：${Date.now() - start} ms\n`);
+        console.log(`胜利者支付投标耗时：${Date.now() - start} ms`);
+        console.log('====================================\n\n');
 
         // // 退还押金
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
         gas[j++] = await withdraw();
         time[j-1] = Date.now() - start;
-        console.log(`取回押金耗时：${Date.now() - start} ms\n`);
+        console.log(`取回押金耗时：${Date.now() - start} ms`);
+        console.log('====================================\n\n');
 
         // 摧毁合约
         BlockNumber[i++] = await web3.eth.getBlockNumber();
         start = Date.now();
         gas[j++] = await Destroy();
         time[j-1] = Date.now() - start;
-        console.log(`摧毁合约耗时：${Date.now() - start} ms\n`);
+        console.log(`摧毁合约耗时：${Date.now() - start} ms`);
+        console.log('====================================\n\n');
         BlockNumber[i++] = await web3.eth.getBlockNumber();
 
         j = 0;
@@ -175,17 +185,6 @@ async function interact() {
             }
             return timeTotal;
         }
-    // var data = `消耗汇总：
-    // 部署合约：${timeDeploy}ms   ${gasDeploy}  
-    // 投  标:   ${time[j]}ms    ${gas[j++]}   
-    // 决出胜者: ${time[j]}ms    ${gas[j++]}   
-    // 生成证明：${time[j]}ms    ${gas[j++]}   
-    // 揭示投标：${time[j]}ms    ${gas[j++]}   
-    // 验  证：  ${time[j]}ms    ${gas[j++]}   
-    // 胜者支付：${time[j]}ms    ${gas[j++]}   
-    // 退还押金：${time[j]}ms    ${gas[j++]}   
-    // 摧毁合约：${time[j]}ms    ${gas[j++]}   
-    // 总  计gas：  ${gasDeploy + Total(gas)}  `
     var i=0 , j=0
 var data = `{
     "accounts": ${Accounts.length},
@@ -215,12 +214,15 @@ var data = `{
     ]
 },
 `
-//         console.log('操作系统类型:', os.type());
-// console.log('CPU 架构:', os.arch());
-// console.log('主机名:', os.hostname());
+
+console.log('====================================');
+console.log('操作系统类型:', os.type());
+console.log('CPU 架构:', os.arch());
+console.log('主机名:', os.hostname());
+console.log('====================================');
         try {
             fs.appendFileSync(`data/${Accounts.length}/${os.hostname()}_${Accounts.length}_${os.type()}_${os.arch()}.json`, data);
-            console.log(`${os.hostname()} Data was appended to the file.`);
+            console.log(`Data was appended to the file.`);
         } catch (err) {
             console.error('Error appending data to the file:', err);
         }
@@ -228,6 +230,7 @@ var data = `{
 
     // 开始投标
     async function startBid() {
+        console.log('====================================');
         console.log(`开始投标`)
         var gasTotal = BigInt(0);
         try {
@@ -259,6 +262,7 @@ var data = `{
     var index;  //index+1是胜者序列
     var proofArray = [];
     async function ClaimWinner() {
+        console.log('====================================');
         console.log(`开始决出胜者`)
         var gasTotal = BigInt(0);
         try {
@@ -298,6 +302,7 @@ var data = `{
 
     // 生成证明
     async function genProofs() {
+        console.log('====================================');
         console.log(`开始生成证明`)
         var gasTotal = BigInt(0);
         try {
@@ -321,6 +326,7 @@ var data = `{
 
     // 揭示投标
     async function RevealAndVerify() {
+        console.log('====================================');
         console.log(`开始揭示承诺`)
         var gasTotal = BigInt(0);
         try {
@@ -338,6 +344,7 @@ var data = `{
 
     // 开始验证
     async function verifyWinnerBid() {
+        console.log('====================================');
         console.log(`开始验证胜利者投标`)
         var gasTotal = BigInt(0);
         try {
@@ -364,6 +371,7 @@ var data = `{
 
     // 胜利者支付bid
     async function WinnerPay() {
+        console.log('====================================');
         console.log(`胜利者开始支付投标`)
         var gasTotal = BigInt(0);
         // console.log(`${Accounts[index+1]}\n${await MyContract.methods.winning_bidder().call({from: defaultAccount})}`)
@@ -385,6 +393,7 @@ var data = `{
 
     // 取回押金
     async function withdraw() {
+        console.log('====================================');
         console.log(`开始取回押金`)
         // var time = await MyContract.methods.withdrawLock().call({from: Accounts[0]});
         // console.log(`时间：${time}`)
@@ -408,6 +417,7 @@ var data = `{
 
     // 销毁合约
     async function Destroy() {
+        console.log('====================================');
         console.log(`开始摧毁合约`)
         var gasTotal = BigInt(0);
         try {

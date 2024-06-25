@@ -4,7 +4,8 @@
   "description": "a auction of the proof is created stark",
   "main": "index.js",
   "scripts": {
-    "test": "node ./test.js"
+      "dev": "node ./main.js",
+      "test": " node ./test/stark.test.js"
   },
   "keywords": [
     "auction",

@@ -1,0 +1,42 @@
+[
+  {
+    "gateCount": 63,
+    "genTime": 13.4,
+    "verTime": 11.4
+  },
+  {
+    "gateCount": 127,
+    "genTime": 11.8,
+    "verTime": 10.8
+  },
+  {
+    "gateCount": 255,
+    "genTime": 23.2,
+    "verTime": 17.6
+  },
+  {
+    "gateCount": 511,
+    "genTime": 38.4,
+    "verTime": 24.8
+  },
+  {
+    "gateCount": 1023,
+    "genTime": 80.6,
+    "verTime": 47.6
+  },
+  {
+    "gateCount": 2047,
+    "genTime": 153,
+    "verTime": 77.4
+  },
+  {
+    "gateCount": 4095,
+    "genTime": 347,
+    "verTime": 152.8
+  },
+  {
+    "gateCount": 8191,
+    "genTime": 687.6,
+    "verTime": 277
+  }
+]
